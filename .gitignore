@@ -10,7 +10,7 @@
 *.docx
 *.ppt
 *.pptx
-
+*.pdf
 
 # data
 US/Data/
@@ -31,4 +31,3 @@ US/Data/
 
 # VIM
 *.swp
-
