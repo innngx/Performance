@@ -1,4 +1,6 @@
 # Performance Analysis-ATC
+2/4/2016 R_2015 updated; check review scores matching hire_rehire_date before projecting;
+
 2/1/2016 new one: remove ppt and data. only code
 
 12/16/2015 adding detail analysis
