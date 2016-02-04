@@ -12,7 +12,6 @@ matched <- read.csv("matched.csv", header = T)
 # matched <- subset(matched, Business_Unit != "US Feeds") # delete US Feeds
 # matched <- subset(matched, EEO_Category == "Operatives") # department check with gender
 unmatched <- read.csv("unmatched.csv", header = T)
-all <- read.csv("all.csv", header = T)
 reg <- read.csv("reg.csv", header = T)
 info <- read.csv("info.csv", header = T)
 info <- subset(info, Age >= 10)  # Age less than 10 not normal

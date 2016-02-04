@@ -8,33 +8,55 @@ libname Review "&path";
 		%put &var;
 
 *code for detail.csv output;
-data DataSetPerformance1214_&var;
+data DataSetPerformance1215_&var;
 	set review.DataSetPerformance(keep=Payroll_Name Gender Date_of_Birth Age Marital_Status Children Job_title EEO_Category Date_of_hire_rehire Years_Of_Service Company_Code Original_Date_of_hire Business_Unit Home_Department Employee_Status_Type Employee_Status_Classification Last_Day_of_Employment VSm VS Education
-									   &var.12 &var.13 &var.14);
-	if &var.14=. and &var.13=. and &var.12=. then delete;	/*not all detail review exist*/
-	if &var.14=. and &var.13=. and &var.12^=. then Review=&var.12;
-	if &var.14=. and &var.13^=. and &var.12=. then Review=&var.13;
-	if &var.14^=. and &var.13=. and &var.12=. then Review=&var.14;
-	if &var.14^=. and &var.13^=. and &var.12=. then
+									   &var.12 &var.13 &var.14 &var.15);
+	if &var.15=. and &var.14=. and &var.13=. and &var.12=. then delete;	/*not all detail review exist*/
+	if &var.15=. and &var.14=. and &var.13=. and &var.12^=. then Review=&var.12;  /*C41-4*/
+	if &var.15=. and &var.14=. and &var.13^=. and &var.12=. then Review=&var.13;  /*C41-3*/
+	if &var.15=. and &var.14^=. and &var.13=. and &var.12=. then Review=&var.14;  /*C41-2*/
+	if &var.15^=. and &var.14=. and &var.13=. and &var.12=. then Review=&var.15;  /*C41-1*/
+	if &var.15^=. and &var.14=. and &var.13=. and &var.12^=. then	/*C42-14*/
+		if &var.15=&var.12 then Review=&var.15;
+		else Review=.;
+	if &var.15^=. and &var.14=. and &var.13^=. and &var.12=. then	/*C42-13*/
+		if &var.15=&var.13 then Review=&var.15;
+		else Review=.;
+	if &var.15^=. and &var.14^=. and &var.13=. and &var.12=. then	/*C42-12*/
+		if &var.15=&var.14 then Review=&var.15;
+		else Review=.;
+	if &var.15=. and &var.14^=. and &var.13=. and &var.12^=. then	/*C42-24*/
+		if &var.14=&var.12 then Review=&var.14;
+		else Review=.;
+	if &var.15=. and &var.14^=. and &var.13^=. and &var.12=. then	/*C42-23*/
 		if &var.14=&var.13 then Review=&var.14;
 		else Review=.;
-	if &var.14=. and &var.13^=. and &var.12^=. then
+	if &var.15=. and &var.14=. and &var.13^=. and &var.12^=. then	/*C42-34*/
 		if &var.13=&var.12 then Review=&var.13;
 		else Review=.;
-	if &var.14^=. and &var.13=. and &var.12^=. then
-		if &var.14=&var.12 then Review=&var.12;
+	if &var.15^=. and &var.14^=. and &var.13^=. and &var.12=. then	/*C43-123*/
+		if &var.15=&var.14=&var.13 then Review=&var.15;
 		else Review=.;
-	if &var.14^=. and &var.13^=. and &var.12^=. then
-		if &var.14=&var.13=&var.12 then Review=&var.12;
+	if &var.15^=. and &var.14^=. and &var.13=. and &var.12^=. then	/*C43-124*/
+		if &var.15=&var.14=&var.12 then Review=&var.15;
+		else Review=.;
+	if &var.15^=. and &var.14=. and &var.13^=. and &var.12^=. then	/*C43-134*/
+		if &var.15=&var.13=&var.12 then Review=&var.15;
+		else Review=.;
+	if &var.15=. and &var.14^=. and &var.13^=. and &var.12^=. then	/*C43-234*/
+		if &var.14=&var.13=&var.12 then Review=&var.14;
+		else Review=.;
+	if &var.15^=. and &var.14^=. and &var.13^=. and &var.12^=. then	/*C44*/
+		if &var.15=&var.14=&var.13=&var.12 then Review=&var.15;
 		else Review=.;
 	Review = round(Review,1);	/*round up all review*/
 run;
 data matched_&var;
-	set DataSetPerformance1214_&var;
+	set DataSetPerformance1215_&var;
 	if Review^=. then output;
 run;
 data unmatched_&var;
-	set DataSetPerformance1214_&var;
+	set DataSetPerformance1215_&var;
 	if Review=. then output;
 	drop Review;
 run;
@@ -53,13 +75,13 @@ run;
 
 
 data ReviewRegDetail(keep=Payroll_Name J R C P I H Review);
-	merge review.DataSetPerformance1214
-		  DataSetPerformance1214_J(rename=(Review=J))
-		  DataSetPerformance1214_R(rename=(Review=R))
-		  DataSetPerformance1214_C(rename=(Review=C))
-		  DataSetPerformance1214_P(rename=(Review=P))
-		  DataSetPerformance1214_I(rename=(Review=I))
-		  DataSetPerformance1214_H(rename=(Review=H));
+	merge review.DataSetPerformance1215
+		  DataSetPerformance1215_J(rename=(Review=J))
+		  DataSetPerformance1215_R(rename=(Review=R))
+		  DataSetPerformance1215_C(rename=(Review=C))
+		  DataSetPerformance1215_P(rename=(Review=P))
+		  DataSetPerformance1215_I(rename=(Review=I))
+		  DataSetPerformance1215_H(rename=(Review=H));
 	by Payroll_Name;
 	if Review=. or J=. or R=. or C=. or P=. or I=. or H=. then delete;
 run;
@@ -68,14 +90,14 @@ proc export data=ReviewRegDetail outfile="&path\ReviewRegDetail.csv" dbms = csv 
 run;
 
 data ReviewRegDetailS(keep=Payroll_Name J R C P I H S Review);
-	merge review.DataSetPerformance1214
-		  DataSetPerformance1214_J(rename=(Review=J))
-		  DataSetPerformance1214_R(rename=(Review=R))
-		  DataSetPerformance1214_C(rename=(Review=C))
-		  DataSetPerformance1214_P(rename=(Review=P))
-		  DataSetPerformance1214_I(rename=(Review=I))
-		  DataSetPerformance1214_H(rename=(Review=H))
-		  DataSetPerformance1214_S(rename=(Review=S));
+	merge review.DataSetPerformance1215
+		  DataSetPerformance1215_J(rename=(Review=J))
+		  DataSetPerformance1215_R(rename=(Review=R))
+		  DataSetPerformance1215_C(rename=(Review=C))
+		  DataSetPerformance1215_P(rename=(Review=P))
+		  DataSetPerformance1215_I(rename=(Review=I))
+		  DataSetPerformance1215_H(rename=(Review=H))
+		  DataSetPerformance1215_S(rename=(Review=S));
 	by Payroll_Name;
 	if Review=. or J=. or R=. or C=. or P=. or I=. or H=. or S=. then delete;
 run;

@@ -31,20 +31,20 @@ summary(fit)
 par(mfrow=c(2,2))
 plot(fit)
 
+Ys <- cbind(Rregs$Review)
+Xs <- cbind(Rregs$J,Rregs$R,Rregs$C,Rregs$P,Rregs$I,Rregs$H,Rregs$S)
+Xsvar <- c("J","R","C","P","I","H","S")
+colnames(Xs) <- Xsvar
+table(Ys)
+summary(Xs)
 
-Y <- cbind(Rregs$Review)
-X <- cbind(Rregs$J,Rregs$R,Rregs$C,Rregs$P,Rregs$I,Rregs$H,Rregs$S)
-Xvar <- c("J","R","C","P","I","H","S")
-colnames(X) <- Xvar
-table(Y)
-summary(X)
-
-ddist <- datadist(Xvar)
+ddist <- datadist(Xsvar)
 options(datadist = 'ddist')
-ologits <- lrm(Y ~ X, data=Rregs)
-print(ologits)
+# mulit col?
+# ologits <- lrm(Ys ~ Xs, data=Rregs)
+# print(ologits)
 
-fits <- lm(Y~X) 
+fits <- lm(Ys~Xs) 
 summary(fits)
 par(mfrow=c(2,2))
 plot(fits)
