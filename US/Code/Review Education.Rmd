@@ -1,0 +1,52 @@
+---
+title: "Review Education"
+output:
+  html_document:
+    theme: united
+  pdf_document: default
+  word_document: default
+---
+`r as.character(format(Sys.Date(), format="%B %d, %Y"))`
+
+------
+This is Review vs Education
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+library(MASS)
+library(rms)
+library(ggplot2)
+library(plyr)
+library(scales)
+
+rm(list=ls())    #remove all datasets
+setwd("../Data")    #set path
+
+matched <- read.csv("../Data/matched.csv", header = T)
+matched <- subset(matched, Education != "")
+a <- subset(matched, Education == "Associate Level")
+a$Education <- 1
+b <- subset(matched, Education == "Bachelor Level")
+b$Education <- 2
+m <- subset(matched, Education == "Master Level")
+m$Education <- 3
+p <- subset(matched, Education == "PhD Level")
+p$Education <- 4
+mydata <- rbind(a,b,m,p)
+
+mydata <- data.frame(mydata$Review, mydata$Education)
+colnames(mydata) <- c("R","E")
+attach(mydata)
+var <- c("R","E")
+
+table(R)
+summary(E)
+
+ddist <- datadist(var)
+options(datadist = 'ddist')
+ologit <- lrm(R ~ E, data=mydata)
+print(ologit)
+
+```
+
+
+

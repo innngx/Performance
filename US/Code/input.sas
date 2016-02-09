@@ -199,6 +199,25 @@ data review.DataSetPerformance1215;
 		if R_2015=R_2014=R_2013=R_2012 then Review=R_2015;
 		else Review=.;
 run;
+
+/*projection if active and no review scores;
+data new;
+	set review.DataSetPerformance1215;
+	if Employee_Status_Type='Active' then
+		if R_2015=. and R_2014=. and R_2013=. and R_2012^=. then do;
+			R_2015=R_2012;
+			R_2014=R_2012;
+			R_2013=R_2012;
+			end;
+		else if R_2015=. and R_2014=. and R_2013^=. then do;
+			R_2015=R_2013;
+			R_2014=R_2013;
+			end;
+		else if R_2015=. and R_2014^=. then R_2015=R_2014;
+run;
+proc export data=new outfile="&path\new.csv" dbms = csv replace;
+run;*/
+	
 data matched;
 	set review.DataSetPerformance1215;
 	if Review^=. then output;
