@@ -60,7 +60,7 @@ run;
 
 quit;
 
-/*Overall 2012-2014*/
+/*Overall 2012-2014
 data review.DataSetPerformance1214;
 	set review.DataSetPerformance(drop=R_2015 J15 R15 C15 P15 I15 H15 S15 J14 R14 C14 P14 I14 H14 S14 J13 R13 C13 P13 I13 H13 S13 J12 R12 C12 P12 I12 H12 S12);
 	if R_2014=. and R_2013=. and R_2012^=. then Review=R_2012;
@@ -78,7 +78,7 @@ data review.DataSetPerformance1214;
 	if R_2014^=. and R_2013^=. and R_2012^=. then
 		if R_2014=R_2013=R_2012 then Review=R_2012;
 		else Review=.;
-if R_2014=. and R_2013=. and R_2012=. then delete;	/*delete empty recouds from R_2015;*/
+if R_2014=. and R_2013=. and R_2012=. then delete;	*delete empty recouds from R_2015;*
 run;
 data matched;
 	set review.DataSetPerformance1214;
@@ -97,7 +97,7 @@ run;
 proc export data=unmatched outfile="&path\archived data\unmatched1214.csv" dbms = csv replace;
 run;
 
-quit;
+quit;*/
 
 /*Overall 2012-2015*/
 /*Check VS and rehire date for review first*/

@@ -208,7 +208,7 @@ ggplot(mydata, aes(x=Review, fill=matched$Employee_Status_Type)) +
 # TEd vs ~.
 TEd <- matched[which(matched$Employee_Status_Type == "Terminated"),]
 names(TEd)
-summary(TEd[,c(2,4:6,8,16,20:25)])
+summary(TEd[,c(2,4:6,8,16,20:26)])
 
 # TEd Overall Review Plot for matched only
 qplot(factor(TEd$Review), data=TEd, geom="bar", 

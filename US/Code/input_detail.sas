@@ -9,7 +9,7 @@ libname Review "&path";
 
 *code for detail.csv output;
 data DataSetPerformance1215_&var;
-	set review.DataSetPerformance(keep=Payroll_Name Gender Date_of_Birth Age Marital_Status Children Job_title EEO_Category Date_of_hire_rehire Years_Of_Service Company_Code Original_Date_of_hire Business_Unit Home_Department Employee_Status_Type Employee_Status_Classification Last_Day_of_Employment VSm VS Education
+	set review.DataSetPerformance(keep=Payroll_Name Gender Date_of_Birth Age Marital_Status Children Job_title EEO_Category Date_of_hire_rehire Years_Of_Service Company_Code Original_Date_of_hire Business_Unit Home_Department Employee_Status_Type Employee_Status_Classification Last_Day_of_Employment VSm VS Department Education
 									   &var.12 &var.13 &var.14 &var.15);
 	if &var.15=. and &var.14=. and &var.13=. and &var.12=. then delete;	/*not all detail review exist*/
 	if &var.15=. and &var.14=. and &var.13=. and &var.12^=. then Review=&var.12;  /*C41-4*/
