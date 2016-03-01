@@ -22,7 +22,9 @@ rm(list=ls())    #remove all datasets
 setwd("../Data")    #set path
 
 matched <- read.csv("../Data/matched.csv", header = T)
-matched <- subset(matched, Education != "")
+
+h <- subset(matched, (Education == "High School or Others" | Education == ""))
+h$Education <- 0
 a <- subset(matched, Education == "Associate Level")
 a$Education <- 1
 b <- subset(matched, Education == "Bachelor Level")
@@ -31,7 +33,7 @@ m <- subset(matched, Education == "Master Level")
 m$Education <- 3
 p <- subset(matched, Education == "PhD Level")
 p$Education <- 4
-mydata <- rbind(a,b,m,p)
+mydata <- rbind(h,a,b,m,p)
 
 mydata <- data.frame(mydata$Review, mydata$Education)
 colnames(mydata) <- c("R","E")
