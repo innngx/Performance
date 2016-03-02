@@ -69,19 +69,28 @@ qplot(Review, data=mydata, geom="bar",
 ```
 
 <hr>
+<!-- results='asis', tidy=TRUE} -->
 
 # Review Scores by Departments
-```{r Departments, echo=FALSE, message=FALSE, results='asis', tidy=TRUE}
+```{r Departments, echo=FALSE, message=FALSE, warning=FALSE}
 
-library(googleVis)
-op <- options(gvis.plot.tag='chart')  #plot option in Rmd
+# library(googleVis)
+# op <- options(gvis.plot.tag='chart')  #plot option in Rmd
+# 
+# dc <- ddply(mydata,.(Department),summarise,median=median(R),mean=mean(R),count=sum(!is.na(Review)),percent=percent(sum(!is.na(Review))/nrow(matched)))
+# 
+# table <- gvisTable(dc[,1:4],
+#                    formats = list(median="#", mean="#.##"),
+#                    options = list(width='100%'))
+# plot(table)
 
-dc <- ddply(mydata,.(Department),summarise,median=median(R),mean=mean(R),count=sum(!is.na(Review)),percent=percent(sum(!is.na(Review))/nrow(matched)))
+ddply(mydata,.(Department),summarise,median=median(R),mean=mean(R),count=sum(!is.na(Review)),percent=percent(sum(!is.na(Review))/nrow(mydata)))
 
-table <- gvisTable(dc[,1:4],
-                   formats = list(median="#", mean="#.##"),
-                   options = list(width='100%'))
-plot(table)
+# department by scores hist
+ggplot(mydata, aes(x=Review,fill=matched$Department)) + geom_bar() + labs(y = "") + theme(legend.title=element_blank()) # this line revome the legend title
+
+# department by scores conditional dist
+ggplot(mydata, aes(x=Review,fill=matched$Department)) + geom_bar(position = "fill") + labs(y = "") + theme(legend.title=element_blank()) # this line revome the legend title
 
 ```
 
@@ -132,6 +141,11 @@ ggplot(mydata, aes(x=matched$Education, fill=Review)) +
 # difference in means between education
 ddply(mydata,.(Edu),summarise,median=median(R),mean=mean(R),count=sum(!is.na(Review)),percent=percent(sum(!is.na(Review))/nrow(mydata)))
 
+# department by education hist
+ggplot(mydata, aes(x=matched$Education,fill=matched$Department)) + geom_bar() + labs(y = "",x = "Education") + scale_x_discrete(limits=c("High School or Others","Associate Level","Bachelor Level","Master Level","PhD Level")) + theme(legend.title=element_blank()) # this line revome the legend title
+
+# department by education conditional dist
+ggplot(mydata, aes(x=matched$Education,fill=matched$Department)) + geom_bar(position = "fill") + labs(y = "",x = "Education") + scale_x_discrete(limits=c("High School or Others","Associate Level","Bachelor Level","Master Level","PhD Level")) + theme(legend.title=element_blank()) # this line revome the legend title
 ```
 
 <hr>
@@ -151,6 +165,13 @@ ddply(mydata,.(Gender),summarise,median=median(R),mean=mean(R),count=sum(!is.na(
 wilcox.test(R~Gender, alternative="greater") #Nonparametric one side test
 ggplot(mydata, aes(x=matched$Gender, fill=Review)) +
   geom_bar(position="fill") + labs(x = "Gender", y = "")
+
+# department by Gender hist
+ggplot(mydata, aes(x=matched$Gender,fill=matched$Department)) + geom_bar() + labs(y = "",x = "Gender") + theme(legend.title=element_blank()) # this line revome the legend title
+
+# department by Gender conditional dist
+ggplot(mydata, aes(x=matched$Gender,fill=matched$Department)) + geom_bar(position = "fill") + labs(y = "",x = "Gender") + theme(legend.title=element_blank()) # this line revome the legend title
+
 ```
 
 <hr>
@@ -158,17 +179,22 @@ ggplot(mydata, aes(x=matched$Gender, fill=Review)) +
 # Married employees have higher Review
 ```{r Married, echo=FALSE, message=FALSE, warning=FALSE}
 # marital status: Hist and Mean label
-ggplot(mydata, aes(x=matched$Marital_Status,fill=Review)) + geom_bar() + labs(x = "Marital Status",y = "") +
-  annotate("text", label = paste ("Marriage Rate:",percent(mean(mydata$M_Status))),
-           x = 3, y = 160, family="serif", fontface="italic", colour="darkred", size=6)
+ggplot(mydata, aes(x=matched$Marital_Status,fill=Review)) + geom_bar() + labs(x = "Marital Status",y = "") + annotate("text", label = paste ("Marriage Rate:",percent(mean(mydata$M_Status))), x = 3, y = 160, family="serif", fontface="italic", colour="darkred", size=6)
 # Review vs all marital status
 ggplot(mydata, aes(x=matched$Marital_Status, fill=Review)) +
   geom_bar(position="fill") + labs(x = "Marital Status",y = "")
+
 # difference in means between Married or not
 ddply(mydata,.(M_Status),summarise,median=median(R),mean=mean(R),count=sum(!is.na(Review)))
 wilcox.test(R~M_Status, alternative="less") #Nonparametric one side test
 ggplot(mydata, aes(x=factor(M_Status), fill=Review)) +
   geom_bar(position="fill") + labs(x = "Marital Status: 1 = Married",y = "")
+
+# # department by married
+# ggplot(mydata, aes(x=factor(M_Status),fill=matched$Department)) + geom_bar() + labs(y = "",x = "Gender") + theme(legend.title=element_blank()) # this line revome the legend title
+# 
+# # department by married dist
+# ggplot(mydata, aes(x=factor(M_Status),fill=matched$Department)) + geom_bar(position = "fill") + labs(y = "",x = "Gender") + theme(legend.title=element_blank()) # this line revome the legend title
 ```
 
 <hr>
@@ -202,7 +228,7 @@ ggplot(mydata, aes(matched$Employee_Status_Type, fill=factor(Review))) + geom_ba
 ddply(matched,.(Employee_Status_Type),summarise,median=median(R_2015),mean=mean(R_2015),count=sum(!is.na(R_2015)))
 wilcox.test(matched$R_2015~matched$Employee_Status_Type, alternative="greater")
 ggplot(mydata, aes(x=matched$R_2015, fill=matched$Employee_Status_Type)) +
-  geom_bar(position="fill") + labs(y = "") +
+  geom_bar(position="fill") + labs(y = "", x = "Review") +
   theme(legend.title=element_blank()) # this line revome the legend title
 ```
 
