@@ -1,15 +1,15 @@
 ---
 title: "Review 2015"
 output:
+  word_document: default
+  pdf_document: default
   html_document:
     theme: united
-  pdf_document: default
-  word_document: default
 ---
 `r as.character(format(Sys.Date(), format="%B %d, %Y"))`
 
 ------
-This is Review of 2015
+Overall we got 248 valid review reports for year 2015, average score is 2.859, going down 1% from year 2014. Most of reviews have score 3 - Commendable. In the regression model: Gender, Marital Status, Vesting Service, Active Status, and Education Level show significant effects on review scores; Age and Children do not show clear patterns.
 
 ```{r, echo=FALSE, message=FALSE, warning=FALSE}
 library(MASS)
@@ -72,6 +72,9 @@ qplot(Review, data=mydata, geom="bar",
 <!-- results='asis', tidy=TRUE} -->
 
 # Review Scores by Departments
+
+If we summarized review scores by department: Operations is the largest department in the analysis, and as the review scores increase, the number of employees from Operations goes down;  on the other hand, Quality/Applications and Sales employees tend to have higher scores. And we do not have Research, Marketing, and Finance departments in this analysis.
+
 ```{r Departments, echo=FALSE, message=FALSE, warning=FALSE}
 
 # library(googleVis)
@@ -97,7 +100,8 @@ ggplot(mydata, aes(x=Review,fill=matched$Department)) + geom_bar(position = "fil
 <hr>
 
 # Review vs Age
-No significant pattern
+
+No significant pattern.
 
 ```{r Age, echo=FALSE, message=FALSE, warning=FALSE}
 # Age: Hist and mean label
@@ -114,7 +118,8 @@ ggplot(mydata, aes(Age, ..count..)) + labs(y = "") +
 <hr>
 
 # Review vs Children
-No significant pattern
+
+No significant pattern.
 
 ```{r Children, echo=FALSE, message=FALSE, warning=FALSE}
 # Children: Hist and mean label
@@ -129,6 +134,11 @@ ggplot(mydata, aes(x=factor(Children), fill=Review)) +
 <hr>
 
 # Higher Education, better review scores
+
+The analysis has assigned 5 levels of education: 0 – High School or Others, 1 – Associate Level, 2 – Bachelor Level, 3 – Master Level, 4 – PhD Level. 
+
+Level 0 – High School or Others is the largest group in the analysis. In the second plot, we can see a clear pattern that as education level goes up, the review scores go up too. If we look into the education by departments plots (third and fourth plots): Operations has relative lower education level, while Quality/Applications and Sales have relative higher education level. 
+
 ```{r Education, echo=FALSE, message=FALSE, warning=FALSE}
 # education: Hist and Mean label
 ggplot(mydata, aes(x=matched$Education,fill=Review)) + geom_bar() + labs(x = "Education",y = "") + scale_x_discrete(limits=c("High School or Others","Associate Level","Bachelor Level","Master Level","PhD Level"))
@@ -151,6 +161,9 @@ ggplot(mydata, aes(x=matched$Education,fill=matched$Department)) + geom_bar(posi
 <hr>
 
 # Gender F(0) has higher Review
+
+In the analysis, we have female rate 25.8%, and females tend to have higher review scores (Wilcoxon level test shows statistically significant: p-value 3.499e-06). When looking into gender by department plots (last two plots): Quality/Applications, Administration, and Regulatory have more female percentage then male; while Operations has more male.
+
 ```{r Gender, echo=FALSE, message=FALSE, warning=FALSE}
 # Gender: Hist and Mean label
 ggplot(mydata, aes(matched$Gender, fill=Review)) + geom_bar() + labs(x = "Gender", y = "") +
@@ -177,6 +190,9 @@ ggplot(mydata, aes(x=matched$Gender,fill=matched$Department)) + geom_bar(positio
 <hr>
 
 # Married employees have higher Review
+
+In the analysis, we have marriage rate 60.9%, and married employees tend to have higher review scores (Wilcoxon level test shows statistically significant: p-value 0.0001618).
+
 ```{r Married, echo=FALSE, message=FALSE, warning=FALSE}
 # marital status: Hist and Mean label
 ggplot(mydata, aes(x=matched$Marital_Status,fill=Review)) + geom_bar() + labs(x = "Marital Status",y = "") + annotate("text", label = paste ("Marriage Rate:",percent(mean(mydata$M_Status))), x = 3, y = 160, family="serif", fontface="italic", colour="darkred", size=6)
@@ -199,9 +215,7 @@ ggplot(mydata, aes(x=factor(M_Status), fill=Review)) +
 
 <hr>
 
-# Review vs VS
-Longer VS, higher Review
-
+# Longer VS, higher Review
 ```{r VS, echo=FALSE, message=FALSE, warning=FALSE}
 # VS: Hist and Mean, median label
 ggplot(mydata, aes(x=VS,fill=Review)) + geom_histogram() + labs(y = "") +
@@ -218,6 +232,9 @@ ggplot(mydata, aes(VS, ..count..)) + labs(y = "") +
 <hr>
 
 # Actives have higher Review
+
+In the 2015 review reports, 6 employees terminated by the end of year. 5 from Operations, 1 from Quality/Applications.
+
 ```{r Active, echo=FALSE, message=FALSE, warning=FALSE}
 # Active: Hist and Mean label
 ggplot(mydata, aes(matched$Employee_Status_Type, fill=factor(Review))) + geom_bar() + labs(x = "", y = "") +
@@ -230,6 +247,10 @@ wilcox.test(matched$R_2015~matched$Employee_Status_Type, alternative="greater")
 ggplot(mydata, aes(x=matched$R_2015, fill=matched$Employee_Status_Type)) +
   geom_bar(position="fill") + labs(y = "", x = "Review") +
   theme(legend.title=element_blank()) # this line revome the legend title
+
+TE2015 <- subset(matched, Employee_Status_Type == "Terminated")
+print(TE2015[,c(16,17,18)])
+
 ```
 
 <hr>
