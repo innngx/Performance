@@ -9,9 +9,9 @@ output:
 `r as.character(format(Sys.Date(), format="%B %d, %Y"))`
 
 ------
-Overall we got 248 valid review reports for year 2015, average score is 2.859, going down 1% from year 2014. Most of reviews have score 3 - Commendable. In the regression model: Gender, Marital Status, Vesting Service, Active Status, and Education Level show significant effects on review scores; Age and Children do not show clear patterns.
+Overall we got 286 valid review reports for year 2015, average score is 2.902, going up 0.67% from year 2014. Most of reviews have score 3 - Commendable. In the regression model, review scores have significant patterns among Gender, Marital Status, Active Status, , Education Level and Vesting Service; Age and Children do not show significant patterns.
 
-```{r, echo=FALSE, message=FALSE, warning=FALSE}
+```{r reg, echo=FALSE, message=FALSE, warning=FALSE}
 library(MASS)
 library(rms)
 library(ggplot2)
@@ -64,8 +64,7 @@ print(ologit)
 # Overall Review Plot for 2015
 ```{r Review plot, echo=FALSE, message=FALSE, warning=FALSE}
 # Overall Review Plot for matched only
-qplot(Review, data=mydata, geom="bar",
-      fill=Review) + labs(x = "Review", y = "")
+qplot(Review, data=mydata, geom="bar", fill=Review) + labs(x = "Review", y = "")
 ```
 
 <hr>
@@ -73,7 +72,7 @@ qplot(Review, data=mydata, geom="bar",
 
 # Review Scores by Departments
 
-If we summarized review scores by department: Operations is the largest department in the analysis, and as the review scores increase, the number of employees from Operations goes down;  on the other hand, Quality/Applications and Sales employees tend to have higher scores. And we do not have Research, Marketing, and Finance departments in this analysis.
+If we summarized review scores by department: Operations is the largest department in the analysis, and as the review scores increase, the number of employees from Operations goes down;  on the other hand, Quality/Applications, Sales employees and Research employees tend to have higher scores. We do not have Marketing departments in this analysis.
 
 ```{r Departments, echo=FALSE, message=FALSE, warning=FALSE}
 
@@ -105,14 +104,9 @@ No significant pattern.
 
 ```{r Age, echo=FALSE, message=FALSE, warning=FALSE}
 # Age: Hist and mean label
-ggplot(mydata, aes(x=Age, fill=Review)) + geom_histogram(binwidth = 5) + labs(y = "") +
-  annotate("text", label = paste ("Average Age =",round(mean(mydata$Age),1)),
-           x = 55, y = 40, family="serif", fontface="italic", colour="darkred", size=6) +
-  annotate("text", label = paste ("Median Age =",round(median(mydata$Age),1)),
-           x = 55, y = 37, family="serif", fontface="italic", colour="darkred", size=6)
+ggplot(mydata, aes(x=Age, fill=Review)) + geom_histogram(binwidth = 5) + labs(y = "") + annotate("text", label = paste ("Average Age =",round(mean(mydata$Age),1)), x = 55, y = 40, family="serif", fontface="italic", colour="darkred", size=6) + annotate("text", label = paste ("Median Age =",round(median(mydata$Age),1)), x = 55, y = 37, family="serif", fontface="italic", colour="darkred", size=6)
 # Review vs Age
-ggplot(mydata, aes(Age, ..count..)) + labs(y = "") +
-  geom_density(position = "fill", aes(fill = Review, colour = Review))
+ggplot(mydata, aes(Age, ..count..)) + labs(y = "") + geom_density(position = "fill", aes(fill = Review, colour = Review))
 ```
 
 <hr>
@@ -123,9 +117,7 @@ No significant pattern.
 
 ```{r Children, echo=FALSE, message=FALSE, warning=FALSE}
 # Children: Hist and mean label
-ggplot(mydata, aes(x=Children, fill=Review)) + geom_histogram(binwidth = 1) + labs(y = "") +
-  annotate("text", label = paste ("Average Children =",round(mean(mydata$Children),1)),
-           x = 3.5, y = 125, family="serif", fontface="italic", colour="darkred", size=6)
+ggplot(mydata, aes(x=Children, fill=Review)) + geom_histogram(binwidth = 1) + labs(y = "") + annotate("text", label = paste ("Average Children =",round(mean(mydata$Children),1)), x = 3.5, y = 125, family="serif", fontface="italic", colour="darkred", size=6)
 # Review vs Children
 ggplot(mydata, aes(x=factor(Children), fill=Review)) +
   geom_bar(position="fill") + labs(x = "Children",y = "")
@@ -137,7 +129,7 @@ ggplot(mydata, aes(x=factor(Children), fill=Review)) +
 
 The analysis has assigned 5 levels of education: 0 – High School or Others, 1 – Associate Level, 2 – Bachelor Level, 3 – Master Level, 4 – PhD Level. 
 
-Level 0 – High School or Others is the largest group in the analysis. In the second plot, we can see a clear pattern that as education level goes up, the review scores go up too. If we look into the education by departments plots (third and fourth plots): Operations has relative lower education level, while Quality/Applications and Sales have relative higher education level. 
+Level 0 – High School or Others is the largest group in the analysis. In the second plot, we can see a pattern that as education level goes up, the review scores go up too. If we look into the education by departments plots (third and fourth plots): Operations has relative lower education level, while Quality/Applications, Sales and Research have relative higher education level. 
 
 ```{r Education, echo=FALSE, message=FALSE, warning=FALSE}
 # education: Hist and Mean label
@@ -162,22 +154,17 @@ ggplot(mydata, aes(x=matched$Education,fill=matched$Department)) + geom_bar(posi
 
 # Gender F(0) has higher Review
 
-In the analysis, we have female rate 25.8%, and females tend to have higher review scores (Wilcoxon level test shows statistically significant: p-value 3.499e-06). When looking into gender by department plots (last two plots): Quality/Applications, Administration, and Regulatory have more female percentage then male; while Operations has more male.
+In the analysis, we have female rate 30.1%, and females tend to have higher review scores (Wilcoxon level test shows statistically significant: p-value 2.704e-07). When looking into gender by department plots (last two plots): Quality/Applications, Research, Administration, and Regulatory have more female percentage then male; while Operations has more male.
 
 ```{r Gender, echo=FALSE, message=FALSE, warning=FALSE}
 # Gender: Hist and Mean label
-ggplot(mydata, aes(matched$Gender, fill=Review)) + geom_bar() + labs(x = "Gender", y = "") +
-  annotate("text", label = paste ("Female:",percent((1-mean(Gender)))),
-           x = 1, y = 75, family="serif", fontface="italic", colour="darkred", size=6)
+ggplot(mydata, aes(matched$Gender, fill=Review)) + geom_bar() + labs(x = "Gender", y = "") + annotate("text", label = paste ("Female:",percent((1-mean(Gender)))), x = 1, y = 100, family="serif", fontface="italic", colour="darkred", size=6)
 # Gender F has higher Review
-ggplot(mydata, aes(x=Review, fill=matched$Gender)) +
-  geom_bar(position="fill") + labs(y = "") +
-  theme(legend.title=element_blank()) # this line revome the legend title
+ggplot(mydata, aes(x=Review, fill=matched$Gender)) + geom_bar(position="fill") + labs(y = "") + theme(legend.title=element_blank()) # this line revome the legend title
 # difference in means between Gender
 ddply(mydata,.(Gender),summarise,median=median(R),mean=mean(R),count=sum(!is.na(Review)))
 wilcox.test(R~Gender, alternative="greater") #Nonparametric one side test
-ggplot(mydata, aes(x=matched$Gender, fill=Review)) +
-  geom_bar(position="fill") + labs(x = "Gender", y = "")
+ggplot(mydata, aes(x=matched$Gender, fill=Review)) + geom_bar(position="fill") + labs(x = "Gender", y = "")
 
 # department by Gender hist
 ggplot(mydata, aes(x=matched$Gender,fill=matched$Department)) + geom_bar() + labs(y = "",x = "Gender") + theme(legend.title=element_blank()) # this line revome the legend title
@@ -191,11 +178,11 @@ ggplot(mydata, aes(x=matched$Gender,fill=matched$Department)) + geom_bar(positio
 
 # Married employees have higher Review
 
-In the analysis, we have marriage rate 60.9%, and married employees tend to have higher review scores (Wilcoxon level test shows statistically significant: p-value 0.0001618).
+In the analysis, we have marriage rate 61.5%, and married employees tend to have higher review scores (Wilcoxon level test shows statistically significant: p-value 0.0002089).
 
 ```{r Married, echo=FALSE, message=FALSE, warning=FALSE}
 # marital status: Hist and Mean label
-ggplot(mydata, aes(x=matched$Marital_Status,fill=Review)) + geom_bar() + labs(x = "Marital Status",y = "") + annotate("text", label = paste ("Marriage Rate:",percent(mean(mydata$M_Status))), x = 3, y = 160, family="serif", fontface="italic", colour="darkred", size=6)
+ggplot(mydata, aes(x=matched$Marital_Status,fill=Review)) + geom_bar() + labs(x = "Marital Status",y = "") + annotate("text", label = paste ("Marriage Rate:",percent(mean(mydata$M_Status))), x = 3, y = 190, family="serif", fontface="italic", colour="darkred", size=6)
 # Review vs all marital status
 ggplot(mydata, aes(x=matched$Marital_Status, fill=Review)) +
   geom_bar(position="fill") + labs(x = "Marital Status",y = "")
@@ -203,8 +190,7 @@ ggplot(mydata, aes(x=matched$Marital_Status, fill=Review)) +
 # difference in means between Married or not
 ddply(mydata,.(M_Status),summarise,median=median(R),mean=mean(R),count=sum(!is.na(Review)))
 wilcox.test(R~M_Status, alternative="less") #Nonparametric one side test
-ggplot(mydata, aes(x=factor(M_Status), fill=Review)) +
-  geom_bar(position="fill") + labs(x = "Marital Status: 1 = Married",y = "")
+ggplot(mydata, aes(x=factor(M_Status), fill=Review)) + geom_bar(position="fill") + labs(x = "Marital Status: 1 = Married",y = "")
 
 # # department by married
 # ggplot(mydata, aes(x=factor(M_Status),fill=matched$Department)) + geom_bar() + labs(y = "",x = "Gender") + theme(legend.title=element_blank()) # this line revome the legend title
@@ -218,15 +204,10 @@ ggplot(mydata, aes(x=factor(M_Status), fill=Review)) +
 # Longer VS, higher Review
 ```{r VS, echo=FALSE, message=FALSE, warning=FALSE}
 # VS: Hist and Mean, median label
-ggplot(mydata, aes(x=VS,fill=Review)) + geom_histogram() + labs(y = "") +
-  annotate("text", label = paste ("Average VS =",round(mean(mydata$VS),1)),
-           x = 15, y = 40, family="serif", fontface="italic", colour="darkred", size=6) +
-  annotate("text", label = paste ("Median VS =",round(median(mydata$VS),1)),
-           x = 15, y = 37, family="serif", fontface="italic", colour="darkred", size=6)
+ggplot(mydata, aes(x=VS,fill=Review)) + geom_histogram() + labs(y = "") + annotate("text", label = paste ("Average VS =",round(mean(mydata$VS),1)), x = 15, y = 40, family="serif", fontface="italic", colour="darkred", size=6) + annotate("text", label = paste ("Median VS =",round(median(mydata$VS),1)), x = 15, y = 37, family="serif", fontface="italic", colour="darkred", size=6)
 # Review vs VS
 # mydatavs <- subset(mydata, VS != "32.17") #to keep consistent: remove the only VS 30 - Review 2 point
-ggplot(mydata, aes(VS, ..count..)) + labs(y = "") +
-  geom_density(position = "fill", aes(fill = Review, colour = Review))
+ggplot(mydata, aes(VS, ..count..)) + labs(y = "") + geom_density(position = "fill", aes(fill = Review, colour = Review))
 ```
 
 <hr>
@@ -237,16 +218,11 @@ In the 2015 review reports, 6 employees terminated by the end of year. 5 from Op
 
 ```{r Active, echo=FALSE, message=FALSE, warning=FALSE}
 # Active: Hist and Mean label
-ggplot(mydata, aes(matched$Employee_Status_Type, fill=factor(Review))) + geom_bar() + labs(x = "", y = "") +
-  annotate("text", label = paste ("Active:",percent((mean(Active)))),
-           x = 1, y = 260, family="serif", fontface="italic", colour="darkred", size=6) +
-  scale_fill_discrete(guide = guide_legend(title = "Review")) # title text
+ggplot(mydata, aes(matched$Employee_Status_Type, fill=factor(Review))) + geom_bar() + labs(x = "", y = "") + annotate("text", label = paste ("Active:",percent((mean(Active)))), x = 1, y = 300, family="serif", fontface="italic", colour="darkred", size=6) + scale_fill_discrete(guide = guide_legend(title = "Review")) # title text
 # difference in means between Active or not (No retired)
 ddply(matched,.(Employee_Status_Type),summarise,median=median(R_2015),mean=mean(R_2015),count=sum(!is.na(R_2015)))
 wilcox.test(matched$R_2015~matched$Employee_Status_Type, alternative="greater")
-ggplot(mydata, aes(x=matched$R_2015, fill=matched$Employee_Status_Type)) +
-  geom_bar(position="fill") + labs(y = "", x = "Review") +
-  theme(legend.title=element_blank()) # this line revome the legend title
+ggplot(mydata, aes(x=matched$R_2015, fill=matched$Employee_Status_Type)) + geom_bar(position="fill") + labs(y = "", x = "Review") + theme(legend.title=element_blank()) # this line revome the legend title
 
 TE2015 <- subset(matched, Employee_Status_Type == "Terminated")
 print(TE2015[,c(16,17,18)])
