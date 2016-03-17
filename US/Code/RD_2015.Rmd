@@ -1,17 +1,15 @@
 ---
 title: "Review 2015 - Research Department"
 output:
+  word_document: default
+  pdf_document: default
   html_document:
     theme: united
-  pdf_document: default
-  word_document: default
 ---
 `r as.character(format(Sys.Date(), format="%B %d, %Y"))`
 
 ------
 There are 38 valid review reports for year 2015, average score is 3.184 (higher than 2015 overall review score 2.902). Most of reviews have score 3 - Commendable, and research department donot have review scores under 2 - Satisfactory.
-
-May because the sample size is small, using the same regression model as other review analysis does not generate a good result.
 
 ```{r, echo=FALSE, message=FALSE, warning=FALSE}
 library(MASS)
@@ -111,28 +109,38 @@ plot(table)
 
 <hr>
 
+# Review vs Gender
+
+```{r Gender, echo=FALSE, message=FALSE, warning=FALSE}
+# Gender: Hist and Mean label
+ggplot(mydata, aes(matched$Gender, fill=Review)) + geom_bar() + labs(x = "Gender", y = "") + annotate("text", label = paste ("Female:",percent((1-mean(Gender)))), x = 1, y = 23, family="serif", fontface="italic", colour="darkred", size=6)
+# Gender F has higher Review
+ggplot(mydata, aes(x=Review, fill=matched$Gender)) + geom_bar(position="fill") + labs(y = "") + theme(legend.title=element_blank()) # this line revome the legend title
+# difference in means between Gender
+ddply(mydata,.(Gender),summarise,median=median(R),mean=mean(R),count=sum(!is.na(Review)))
+wilcox.test(R~Gender, alternative="greater") #Nonparametric one side test
+ggplot(mydata, aes(x=matched$Gender, fill=Review)) + geom_bar(position="fill") + labs(x = "Gender", y = "")
+
+# Sub_Department by Gender hist
+ggplot(mydata, aes(x=matched$Gender,fill=matched$Sub_Department)) + geom_bar() + labs(y = "",x = "Gender") + theme(legend.title=element_blank()) # this line revome the legend title
+
+# Sub_Department by Gender conditional dist
+ggplot(mydata, aes(x=matched$Gender,fill=matched$Sub_Department)) + geom_bar(position = "fill") + labs(y = "",x = "Gender") + theme(legend.title=element_blank()) # this line revome the legend title
+
+```
+
+<hr>
+
 # Review vs Age
 
 ```{r Age, echo=FALSE, message=FALSE, warning=FALSE}
 # Age: Hist and mean label
 ggplot(mydata, aes(x=Age, fill=Review)) + geom_histogram(binwidth = 5) + labs(y = "") + annotate("text", label = paste ("Average Age =",round(mean(mydata$Age),1)), x = 55, y = 10, family="serif", fontface="italic", colour="darkred", size=6) + annotate("text", label = paste ("Median Age =",round(median(mydata$Age),1)), x = 55, y = 9, family="serif", fontface="italic", colour="darkred", size=6)
 
-subset(mydata, R == 2)
-# # Review vs Age
-# ggplot(mydata, aes(Age, ..count..)) + labs(y = "") +
-#   geom_density(position = "fill", aes(fill = Review, colour = Review))
-```
-
-<hr>
-
-# Review vs Children
-
-```{r Children, echo=FALSE, message=FALSE, warning=FALSE}
-# Children: Hist and mean label
-ggplot(mydata, aes(x=Children, fill=Review)) + geom_histogram(binwidth = 1) + labs(y = "") + annotate("text", label = paste ("Average Children =",round(mean(mydata$Children),1)), x = 3, y = 15, family="serif", fontface="italic", colour="darkred", size=6)
-# # Review vs Children
-# ggplot(mydata, aes(x=factor(Children), fill=Review)) +
-#   geom_bar(position="fill") + labs(x = "Children",y = "")
+subset(mydata, R == 2, select = c(Review,Payroll_Name,Age,Sub_Department))
+# Review vs Age
+ggplot(mydata, aes(Age, ..count..)) + labs(y = "") +
+  geom_density(position = "fill", aes(fill = Review, colour = Review))
 ```
 
 <hr>
@@ -143,7 +151,7 @@ The analysis has assigned 5 levels of education: 0 – High School or Others, 1 
 
 ```{r Education, echo=FALSE, message=FALSE, warning=FALSE}
 # difference in means between education
-ddply(mydata,.(Edu),summarise,median=median(R),mean=mean(R),count=sum(!is.na(Review)),percent=percent(sum(!is.na(Review))/nrow(mydata)))
+ddply(mydata,.(Edu),summarise,median=median(R),mean=mean(R),count=sum(!is.na(Review)),percent=percent(sum(!is.na(Review))/nrow(mydata)),meanVS=round(mean(VS),2),meanAge=round(mean(Age),2))
 
 ggplot(mydata, aes(x=matched$Education,R)) + geom_boxplot() + labs(x= "", y = "Review") + scale_x_discrete(limits=c("High School or Others","Associate Level","Bachelor Level","Master Level","PhD Level"))
 
@@ -164,23 +172,17 @@ ggplot(mydata, aes(x=matched$Education,fill=matched$Sub_Department)) + geom_bar(
 
 <hr>
 
-# Review vs Gender
 
-```{r Gender, echo=FALSE, message=FALSE, warning=FALSE}
-# Gender: Hist and Mean label
-ggplot(mydata, aes(matched$Gender, fill=Review)) + geom_bar() + labs(x = "Gender", y = "") + annotate("text", label = paste ("Female:",percent((1-mean(Gender)))), x = 1, y = 23, family="serif", fontface="italic", colour="darkred", size=6)
-# Gender F has higher Review
-ggplot(mydata, aes(x=Review, fill=matched$Gender)) + geom_bar(position="fill") + labs(y = "") + theme(legend.title=element_blank()) # this line revome the legend title
-# difference in means between Gender
-ddply(mydata,.(Gender),summarise,median=median(R),mean=mean(R),count=sum(!is.na(Review)))
-wilcox.test(R~Gender, alternative="greater") #Nonparametric one side test
-ggplot(mydata, aes(x=matched$Gender, fill=Review)) + geom_bar(position="fill") + labs(x = "Gender", y = "")
+# Review vs MBO
 
-# Sub_Department by Gender hist
-ggplot(mydata, aes(x=matched$Gender,fill=matched$Sub_Department)) + geom_bar() + labs(y = "",x = "Gender") + theme(legend.title=element_blank()) # this line revome the legend title
+```{r MBO, echo=FALSE, message=FALSE, warning=FALSE}
+# boxplot
+ggplot(mydata, aes(x=matched$Sub_Department,MBO)) + geom_boxplot() + coord_flip() + labs(x= "", y = "Review")
 
-# Sub_Department by Gender conditional dist
-ggplot(mydata, aes(x=matched$Gender,fill=matched$Sub_Department)) + geom_bar(position = "fill") + labs(y = "",x = "Gender") + theme(legend.title=element_blank()) # this line revome the legend title
+# Sub_Department by scores hist
+ggplot(mydata, aes(x=factor(MBO),fill=matched$Sub_Department)) + geom_bar() + labs(y = "") + theme(legend.title=element_blank()) # this line revome the legend title
+
+subset(mydata, MBO != 0.6, select = c(Review,Payroll_Name,MBO,Sub_Department))
 
 ```
 
@@ -209,6 +211,19 @@ ggplot(mydata, aes(x=factor(M_Status), fill=Review)) + geom_bar(position="fill")
 
 <hr>
 
+# Review vs Children
+
+```{r Children, echo=FALSE, message=FALSE, warning=FALSE}
+# Children: Hist and mean label
+ggplot(mydata, aes(x=Children, fill=Review)) + geom_histogram(binwidth = 1) + labs(y = "") + annotate("text", label = paste ("Average Children =",round(mean(mydata$Children),1)), x = 3, y = 15, family="serif", fontface="italic", colour="darkred", size=6)
+# # Review vs Children
+# ggplot(mydata, aes(x=factor(Children), fill=Review)) +
+#   geom_bar(position="fill") + labs(x = "Children",y = "")
+subset(mydata, R == 2, select = c(Review,Payroll_Name,Children,Sub_Department))
+```
+
+<hr>
+
 # Review vs Vesting Service
 
 ```{r VS, echo=FALSE, message=FALSE, warning=FALSE}
@@ -216,7 +231,7 @@ ggplot(mydata, aes(x=factor(M_Status), fill=Review)) + geom_bar(position="fill")
 ggplot(mydata, aes(x=VS,fill=Review)) + geom_histogram() + labs(y = "") + annotate("text", label = paste ("Average VS =",round(mean(mydata$VS),1)), x = 15, y = 7, family="serif", fontface="italic", colour="darkred", size=6) + annotate("text", label = paste ("Median VS =",round(median(mydata$VS),1)), x = 15, y = 6.5, family="serif", fontface="italic", colour="darkred", size=6)
 # Review vs VS
 # mydatavs <- subset(mydata, VS != "32.17") #to keep consistent: remove the only VS 30 - Review 2 point
-subset(mydata, R == 2)
+subset(mydata, R == 2, select = c(Review,Payroll_Name,VS,Sub_Department))
 
 ```
 
