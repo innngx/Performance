@@ -20,44 +20,22 @@ info <- subset(info, Age >= 10)  # Age less than 10 not normal
 # # if "Error in .Call.graphics(C_palette2, .Call(C_palette2, NULL)) : 
 # # invalid graphics state"
 
-##### Overall info analysis #####
-
-names(info)
-summary(info[,c(3,5:8,10,17:18,20)])
-
-# Age Hist
-info <- subset(info,Age>=10)
-ggplot(info, aes(x=Age)) + geom_histogram(aes(y=..density..), fill = "steelblue", colour = "white") + geom_density(colour = "black") +   annotate("text", label = paste ("Average Age =",round(mean(info$Age),1)), x = 60, y = 0.04, family="serif", fontface="italic", colour="darkred") + annotate("text", label = paste ("Median Age =",round(median(info$Age),1)), x = 60, y = 0.037, family="serif", fontface="italic", colour="darkred")
-ggplot(info, aes(x=Age, fill=Gender)) + geom_histogram(alpha=.6, position="identity") + theme(legend.title=element_blank()) # this line revome the legend title
-
-# VS Hist
-ggplot(info, aes(x=VS)) + 
-  geom_histogram(aes(y=..density..), binwidth = 1, fill = "steelblue", colour = "white") + geom_density(colour = "black") + annotate("text", label = paste ("Average VS =",round(mean(info$VS),1)), x = 30, y = 0.25, family="serif", fontface="italic", colour="darkred") + annotate("text", label = paste ("Median VS =",round(median(info$VS),1)), x = 30, y = 0.23, family="serif", fontface="italic", colour="darkred")
-ggplot(info, aes(x=VS, fill=Gender)) + geom_histogram(alpha=.6, position="identity", binwidth = 1) + theme(legend.title=element_blank()) # this line revome the legend title
-
 # # # Review shows the function of screen performance # # #
 
-# # TE glm [1548 employees - no retired]
+# # TE glm [1570 employees - no retired]
 # (no strong patten between Active and Termed)
 info <- subset(info, Employee_Status_Type != "Retired")
 info$Married <- as.numeric(info$Marital_Status == "Married")
-info.glm <- glm(info$Employee_Status_Type ~ info$Gender+info$Age+info$Married+info$Children+info$VSm, family = binomial)
+info$Race <- as.numeric(info$Race == "White")
+info.glm <- glm(info$Employee_Status_Type ~ info$Gender+info$Age+info$Married+info$Children+info$VSm+info$Race, family = binomial)
 summary(info.glm)
-
-# Married more likely to be active
-ggplot(info, aes(x=factor(info$Married), fill=Employee_Status_Type)) + geom_bar(position="fill") + labs(x = "Marital Status",y = "") +   theme(legend.title=element_blank()) # this line revome the legend title
-# more children more likely to be active
-ggplot(info, aes(x=factor(info$Children), fill=Employee_Status_Type)) + geom_bar(position="fill") + labs(x = "Children",y = "") + theme(legend.title=element_blank()) # this line revome the legend title
-# more VS more likely to be active
-ggplot(info, aes(VS, ..count..)) + labs(y = "") + geom_density(position = "fill", aes(fill = Employee_Status_Type, colour = Employee_Status_Type)) + theme(legend.title=element_blank()) # this line revome the legend title
-# Age vs Active
-ggplot(info, aes(Age, ..count..)) + labs(y = "") + geom_density(position = "fill", aes(fill = Employee_Status_Type, colour = Employee_Status_Type)) + theme(legend.title=element_blank()) # this line revome the legend title
 
 # # TE glm (Review added) [416 employees - no retired]
 # (Only Review shows significant: lower review -> TE)
 TE <- subset(matched, Employee_Status_Type != "Retired")
 TE$Married <- as.numeric(TE$Marital_Status == "Married")
-glm <- glm(TE$Employee_Status_Type ~ TE$Gender+TE$Age+TE$Married+TE$Children+TE$VSm+TE$Review, family = binomial)
+TE$Race <- as.numeric(TE$Race == "White")
+glm <- glm(TE$Employee_Status_Type ~ TE$Gender+TE$Age+TE$Married+TE$Children+TE$VSm+TE$Race+TE$Review, family = binomial)
 summary(glm)
 
 # The termed have lower scores (Strong)
@@ -68,6 +46,7 @@ ggplot(TE, aes(x=factor(Review), fill=Employee_Status_Type)) +  geom_bar(positio
 # creat variables
 Gender <- as.numeric(matched$Gender == "M") #dummy Gender
 M_Status <- as.numeric(matched$Marital_Status == "Married")  #dummy Married
+Race_W <- as.numeric(matched$Race == "White")
 Active <- as.numeric(matched$Employee_Status_Type == "Active") #dummy Active
 R <- as.numeric(matched$Review)
 Review <- as.factor(matched$Review)
@@ -75,12 +54,12 @@ Review <- as.factor(matched$Review)
 # # ordered logit - Review ~ Gender + Age + M_Status + Children + VSm + Active
 # (Significant: Gender, M_Status, VSm, Active; Age, Children are not)
 var <- c("Payroll_Name","Age","Children","VSm","VS")
-mydata <- data.frame(Review,matched[var],Gender,M_Status,Active,R)
+mydata <- data.frame(Review,matched[var],Gender,M_Status,Race_W,Active,R)
 attach(mydata)
 
 Y <- cbind(Review)
-X <- cbind(Gender,Age,M_Status,Children,VSm,Active)
-Xvar <- c("Gender","Age","M_Status","Children","VSm","Active")
+X <- cbind(Gender,Age,M_Status,Children,VSm,Active,Race_W)
+Xvar <- c("Gender","Age","M_Status","Children","VSm","Active","Race_W")
 table(Y)
 summary(X)
 
@@ -161,7 +140,7 @@ ggplot(mydata, aes(x=Review, fill=matched$Employee_Status_Type)) +
 # TEd vs ~.
 TEd <- matched[which(matched$Employee_Status_Type == "Terminated"),]
 names(TEd)
-summary(TEd[,c(2,4:6,8,16,20:26)])
+summary(TEd[,c(2,4:6,8,16,20:27)])
 
 # TEd Overall Review Plot for matched only
 qplot(factor(TEd$Review), data=TEd, geom="bar", 

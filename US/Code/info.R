@@ -28,6 +28,11 @@ MS <- as.numeric(info$Marital_Status == "Married") #dummy Marital_Status
 MSA <- as.numeric(infoA$Marital_Status == "Married")
 MST <- as.numeric(infoT$Marital_Status == "Married")
 MSR <- as.numeric(infoR$Marital_Status == "Married")
+
+RS <- as.numeric(info$Race == "White") #dummy White
+RSA <- as.numeric(infoA$Race == "White")
+RST <- as.numeric(infoT$Race == "White")
+RSR <- as.numeric(infoR$Race == "White")
 # Overall info analysis ---------------------------------------------------
 
 names(info)
@@ -63,6 +68,19 @@ ggplot(info, aes(Employee_Status_Type, fill=Marital_Status)) + geom_bar() + labs
            x = 3, y = 200, family="serif", fontface="italic", colour="darkred") + 
   annotate("text", label = paste (round((mean(MSR))*100,2),"%"), 
            x = 2, y = 50, family="serif", fontface="italic", colour="darkred")
+
+# Status Hist Race
+ggplot(info, aes(Employee_Status_Type, fill=Race)) + geom_bar() + labs(x = "Gender", y = "") + theme(legend.title=element_blank()) + # this line revome the legend title
+  annotate("text", label = paste ("White in all:",round((mean(RS))*100,2),"%"), 
+           x = 2, y = 840, family="serif", fontface="italic", colour="darkred") + 
+  annotate("text", label = paste (round((mean(RSA))*100,2),"%"), 
+           x = 1, y = 450, family="serif", fontface="italic", colour="darkred") +
+  annotate("text", label = paste (round((mean(RST))*100,2),"%"), 
+           x = 3, y = 500, family="serif", fontface="italic", colour="darkred") + 
+  annotate("text", label = paste (round((mean(RSR))*100,2),"%"), 
+           x = 2, y = 50, family="serif", fontface="italic", colour="darkred")
+
+reshape2::dcast(plyr::count(info,c("Race","Employee_Status_Type")),Race~Employee_Status_Type)
 
 # Age Hist Gender
 ggplot(info, aes(x=Age, fill=Gender)) + geom_histogram(alpha=.8, binwidth = 3) + labs(y = "") +

@@ -1,4 +1,4 @@
-%let path=C:\Users\Xgao\Documents\GitHub\Performance\US\Data;  /*define path*/
+%let path=C:\Users\Xgao\Documents\GitHub\Performance\US\Data;  *define path;
 libname Review "&path";
 
 /*year 2012 - 2015;*/
@@ -7,7 +7,7 @@ PROC IMPORT OUT= performance
             DBMS=CSV REPLACE;
      GETNAMES=YES;
      DATAROW=2;
-     guessingrows=32767;  /*set max length to avoid merge problem*/
+     guessingrows=32767;  *set max length to avoid merge problem;
 RUN;
 data performance;
 	set performance;
@@ -22,7 +22,18 @@ PROC IMPORT OUT= edu
             DBMS=CSV REPLACE;
      GETNAMES=YES;
      DATAROW=2;
-     guessingrows=32767;  /*set max length to avoid merge problem*/
+     guessingrows=32767;  *set max length to avoid merge problem;
+RUN;
+proc sort;
+	by Payroll_Name;
+run;
+
+PROC IMPORT OUT= race 
+            DATAFILE= "&path\input_race.csv" 
+            DBMS=CSV REPLACE;
+     GETNAMES=YES;
+     DATAROW=2;
+     guessingrows=32767;  *set max length to avoid merge problem;
 RUN;
 proc sort;
 	by Payroll_Name;
@@ -33,16 +44,16 @@ PROC IMPORT OUT= info
             DBMS=CSV REPLACE;
      GETNAMES=YES;
      DATAROW=2;
-     guessingrows=32767;  /*set max length to avoid merge problem*/
+     guessingrows=32767;  *set max length to avoid merge problem;
 RUN;
 proc sort;
 	by Payroll_Name;
 run;
 
 data info;
-	merge info edu;
+	merge info edu race;
 	by Payroll_Name;
-	if Age = . then delete; /*delete edu from other country*/
+	if Age = . then delete; *delete edu from other country;
 	if Employee_Status_Type='Active' then VSm=intck('month', Date_of_hire_rehire, '31DEC15'd);
 	else VSm=intck('month', Date_of_hire_rehire, Last_Day_of_Employment);
 	VS = round(VSm/12,0.01);
