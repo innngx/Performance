@@ -1,5 +1,5 @@
 ---
-title: "Review 2015"
+title: "Review 2014"
 output:
   html_document:
     theme: united
@@ -22,7 +22,7 @@ rm(list=ls())    #remove all datasets
 # setwd("../Data")    #set path
 
 matched <- read.csv("../Data/test/DataSetPerformance1215.csv", header = T)
-matched <- subset(matched, R_2015 != "")
+matched <- subset(matched, R_2014 != "")
 matched$Education <- as.character(matched$Education)
 matched$Education[which(matched$Education == "")] <- "High School or Others" #assume blank to high school level
 matched$Education <- as.factor(matched$Education)

@@ -6,7 +6,7 @@ library(plyr)
 library(scales)
 
 rm(list=ls())    #remove all datasets
-setwd("C:/Users/Xgao/Documents/GitHub/Performance/US/Data")    #set path
+setwd("C:/Users/Xgao/Documents/GitHub/Performance/US/Data/test")    #set path
 
 matched <- read.csv("matched.csv", header = T)
 # matched <- subset(matched, Business_Unit != "US Feeds") # delete US Feeds

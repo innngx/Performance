@@ -1,13 +1,13 @@
 %let path=C:\Users\Xgao\Documents\GitHub\Performance\US\Data;  /*define path*/
 libname Review "&path";
 
-/*pay cleanup;
+*pay;
 PROC IMPORT OUT= pay 
             DATAFILE= "&path\pay.csv"
             DBMS=CSV REPLACE;
      GETNAMES=YES;
      DATAROW=2;
-     guessingrows=32767;  *set max length to avoid merge problem*;
+     guessingrows=32767;  /*set max length to avoid merge problem*/
 RUN;
 proc sort;
 	by Payroll_Name;
@@ -17,14 +17,18 @@ PROC IMPORT OUT= insurance
             DBMS=CSV REPLACE;
      GETNAMES=YES;
      DATAROW=2;
-     guessingrows=32767;  *set max length to avoid merge problem*;
+     guessingrows=32767;  /*set max length to avoid merge problem*/
 RUN;
 proc sort;
 	by Payroll_Name;
 run;
-data performance;
-	set review.datasetperformance1215;
-run;
+PROC IMPORT OUT= performance 
+            DATAFILE= "&path\PerformanceRD.csv"
+            DBMS=CSV REPLACE;
+     GETNAMES=YES;
+     DATAROW=2;
+     guessingrows=32767;  /*set max length to avoid merge problem*/
+RUN;
 proc sort;
 	by Payroll_Name;
 run;
@@ -34,8 +38,10 @@ data predict;
 	by Payroll_Name;
 	if VS=. then delete;
 run;
+*proc export data=predict outfile="&path\PorformanceRD0.csv" dbms=csv replace;
+*run;
 
-data mydata (keep=Payroll_Name Age Children VS Gender Department M_Status Edu Pay R_2015 HSA);
+data mydata (keep=Payroll_Name Age Children VS Gender Sub_Department MBO M_Status Edu Pay R_2015 HSA);
 	set predict;
 	if R_2015=. then delete;
 	if Gender='M' then Gender=1;
@@ -52,21 +58,14 @@ data mydata (keep=Payroll_Name Age Children VS Gender Department M_Status Edu Pa
 	if Pay=. then delete;
 run;
 
-proc export data=mydata outfile="&path\mydata2015.csv" dbms=csv replace;
-run;
+*proc export data=mydata outfile="&path\PorformanceRD1.csv" dbms=csv replace;
+*run;
 
-quit;*/
+quit;
 
-/*pay reg and predict*/
-PROC IMPORT OUT= reg 
-            DATAFILE= "&path\mydata2015.csv"
-            DBMS=CSV REPLACE;
-     GETNAMES=YES;
-     DATAROW=2;
-     guessingrows=32767;  *set max length to avoid merge problem*;
-RUN;
+*pay reg;
 data reg;
-	set reg;
+	set mydata;
 	lnpay=log(pay);
 	if Gender=1 then Sex=1;
 	else Sex=0;
@@ -87,4 +86,12 @@ proc reg data=reg plots=(RESIDUALBYPREDICTED QQ);
 run;
 title;
 ods graphics off;
+
+proc gchart data=reg;
+	vbar pay / type=PCT inside=FREQ outside=PCT;
+run;
+proc gchart data=reg;
+	vbar lnpay / type=PCT inside=FREQ outside=PCT;
+run;
+
 quit;
