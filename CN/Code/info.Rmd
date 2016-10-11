@@ -1,0 +1,32 @@
+---
+title: "Alltech China Employee Information"
+date: "October 10, 2016"
+output: 
+  html_document: 
+    theme: united
+---
+
+
+```{r reg, echo=FALSE, message=FALSE, warning=FALSE}
+library(ggplot2)
+
+rm(list=ls())    #remove all datasets
+setwd("C:/Users/Xgao/Documents/GitHub/Performance/CN/Data")    #set path
+
+info <- read.csv("info.csv", header = T)
+
+```
+
+<hr>
+
+# Gender vs Age
+
+No significant pattern.
+
+```{r Age, echo=FALSE, message=FALSE, warning=FALSE}
+# Age: Hist and mean label
+ggplot(info, aes(x=Age, fill=Gender)) + geom_histogram(binwidth = 5) + labs(y = "") + annotate("text", label = paste ("Average Age =",round(mean(info$Age),1)), x = 55, y = 40, family="serif", fontface="italic", colour="darkred", size=6) + annotate("text", label = paste ("Median Age =",round(median(info$Age),1)), x = 55, y = 37, family="serif", fontface="italic", colour="darkred", size=6)
+
+```
+
+<hr>
